@@ -10,8 +10,8 @@ public sealed class Parser
 {
     private readonly List<Token> _tokens;
     private int _position;
-    private Token _currentToken;
-    private Token _nextToken;
+    private Token _currentToken = new Token(TokenType.EndOfFile, "", 0, 0, 0);
+    private Token _nextToken = new Token(TokenType.EndOfFile, "", 0, 0, 0);
 
     public Parser(List<Token> tokens)
     {
