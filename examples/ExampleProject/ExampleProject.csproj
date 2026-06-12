@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>ExampleProject</RootNamespace>
+  </PropertyGroup>
+
+  <!-- ========================================== -->
+  <!--      Protobuf Generator 配置示例          -->
+  <!-- ========================================== -->
+
+  <PropertyGroup>
+    <!-- 启用扩展分析器规则（推荐用于源生成器） -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <!-- 可选：设置生成器输出详细程度 -->
+    <ProtobufGeneratorVerbosity>normal</ProtobufGeneratorVerbosity>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ========================================== -->
+    <!--      核心库引用                           -->
+    <!-- ========================================== -->
+
+    <!-- 引用核心运行时库（必需） -->
+    <ProjectReference Include="..\..\src\Protobuf.Core\Protobuf.Core.csproj" />
+
+    <!-- 引用源代码生成器（必需） -->
+    <ProjectReference Include="..\..\src\Protobuf.Generator\Protobuf.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+
+    <!-- 可选：引用 JSON 支持 -->
+    <!--
+    <ProjectReference Include="..\..\src\Protobuf.Json\Protobuf.Json.csproj" />
+    -->
+  </ItemGroup>
+
+  <!-- ========================================== -->
+  <!--      Proto 文件配置 - 多种方式            -->
+  <!-- ========================================== -->
+
+  <ItemGroup>
+    <!-- 方式 1：包含所有 .proto 文件（最简单） -->
+    <!-- 这会自动包含项目中所有 **/*.proto 文件 -->
+    <!-- <ProtoFile Include="**\*.proto" /> -->
+
+    <!-- 方式 2：从特定目录包含 proto 文件 -->
+    <ProtoFile Include="Protos\**\*.proto" />
+
+    <!-- 方式 3：包含特定文件 -->
+    <!--
+    <ProtoFile Include="Protos\api.proto" />
+    <ProtoFile Include="Protos\common.proto" />
+    -->
+
+    <!-- 方式 4：使用通配符排除 -->
+    <!--
+    <ProtoFile Include="**\*.proto" Exclude="**\*.test.proto;**\internal\*.proto" />
+    -->
+
+    <!-- 方式 5：从共享目录包含（跨项目共享 proto 定义） -->
+    <!--
+    <ProtoFile Include="..\SharedProtos\**\*.proto" />
+    -->
+  </ItemGroup>
+
+  <!-- ========================================== -->
+  <!--      可选：导入构建目标                   -->
+  <!-- ========================================== -->
+  <!-- 通常会自动导入，但如果需要可以手动导入 -->
+
+  <!--
+  <Import Project="..\..\build\Protobuf.Generator.targets"
+          Condition="Exists('..\..\build\Protobuf.Generator.targets')" />
+  -->
+
+</Project>

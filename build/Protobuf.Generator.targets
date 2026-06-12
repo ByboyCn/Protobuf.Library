@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!--
+    Protobuf Source Generator Targets
+    这个文件定义了构建时自动处理 .proto 文件的逻辑
+  -->
+
+  <PropertyGroup>
+    <!-- 启用源生成器支持 -->
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+  </PropertyGroup>
+
+  <!-- 默认的 Proto 文件包含模式 -->
+  <ItemGroup Condition="'@(ProtoFile)' == ''">
+    <!-- 如果没有显式配置，包含所有 .proto 文件 -->
+    <AdditionalFiles Include="**\*.proto" />
+  </ItemGroup>
+
+  <!-- 如果用户显式配置了 ProtoFile 项，转换为 AdditionalFiles -->
+  <ItemGroup Condition="'@(ProtoFile)' != ''">
+    <AdditionalFiles Include="@(ProtoFile)" />
+  </ItemGroup>
+
+  <!-- 输出构建信息 -->
+  <Target Name="ProtobufDisplayInfo" BeforeTargets="CoreCompile" Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <_ProtoFileCount>@(AdditionalFiles->WithMetaValue('FileType', 'proto')->Count())</_ProtoFileCount>
+    </PropertyGroup>
+
+    <Message Text="Protobuf Generator: Found $(_ProtoFileCount) .proto file(s)" Importance="low" Condition="'$(_ProtoFileCount)' != '0'" />
+
+    <!-- 显示找到的 proto 文件 -->
+    <ItemGroup>
+      <_ProtoFiles>@(AdditionalFiles->WithMetaValue('FileType', 'proto'))</_ProtoFiles>
+    </ItemGroup>
+
+    <Message Text="  - %(_ProtoFiles.Identity)" Importance="low" Condition="'$(_ProtoFileCount)' != '0'" />
+  </Target>
+
+</Project>

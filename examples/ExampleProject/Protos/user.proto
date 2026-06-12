@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package Example.Api;
+
+// 导入公共类型定义
+import "common.proto";
+
+// 用户相关消息定义
+
+message User {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  Example.Common.Timestamp created_at = 4;
+  repeated string roles = 5;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  repeated string initial_roles = 3;
+}
+
+message CreateUserResponse {
+  Example.Common.Result result = 1;
+  User user = 2;
+}

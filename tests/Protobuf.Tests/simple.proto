@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package Test;
+
+message SimpleMessage {
+  int32 id = 1;
+  string name = 2;
+  bool active = 3;
+}

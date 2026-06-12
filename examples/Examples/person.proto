@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package Example;
+
+message Person {
+  string name = 1;
+  int32 id = 2;
+  string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    string number = 1;
+    PhoneType type = 2;
+  }
+
+  repeated PhoneNumber phones = 4;
+
+  oneof address {
+    string home_address = 5;
+    string work_address = 6;
+  }
+
+  map<string, string> metadata = 7;
+}
+
+enum Gender {
+  MALE = 0;
+  FEMALE = 1;
+  OTHER = 2;
+}

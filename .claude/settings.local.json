@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p src/Protobuf.Core src/Protobuf.Parser src/Protobuf.Generator/CodeTemplates src/Protobuf.Json src/Protobuf.Reflection tests/Protobuf.Tests examples/Examples)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet test *)",
+      "Bash(dotnet run *)",
+      "Bash(dotnet script *)",
+      "Bash(cd ../.. && dotnet test --filter \"FullyQualifiedName~SimpleDebug\" --logger \"console;verbosity=detailed\" 2>&1 | grep -A 20 \"DebugInt64\")",
+      "Read(//d/source/**)",
+      "Bash(dotnet publish *)",
+      "Bash(bin\\\\Release\\\\net8.0\\\\Examples.exe -r)",
+      "Bash(examples/Examples/bin/Release/net8.0/Examples.exe -r)",
+      "Bash(bin/Release/net8.0/Examples.exe -r)"
+    ],
+    "additionalDirectories": [
+      "D:\\source\\Labrarys\\Protobuf.Labrary\\src"
+    ]
+  }
+}

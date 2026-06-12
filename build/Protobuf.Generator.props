@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!--
+    Protobuf Source Generator Directory.Build.props
+    这个文件会自动应用到所有解决方案项目中
+  -->
+
+  <!-- 为所有引用了 Protobuf.Generator 的项目自动导入 targets -->
+  <ItemGroup Condition="Exists('..\..\build\Protobuf.Generator.targets')">
+    <!-- 只有当项目引用了 Generator 时才导入 -->
+  </ItemGroup>
+
+</Project>

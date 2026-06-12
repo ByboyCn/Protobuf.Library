@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package Example.Common;
+
+// 通用数据类型定义
+
+message Result {
+  bool success = 1;
+  string message = 2;
+  int32 error_code = 3;
+}
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}

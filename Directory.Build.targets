@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!--
+    Protobuf Library Directory.Build.targets
+    这个文件会自动应用到解决方案中的所有项目
+  -->
+
+  <!-- 当项目引用了 Protobuf.Generator 时，自动导入 targets -->
+  <Target Name="ImportProtobufTargets" BeforeTargets="CoreCompile" Condition="'@(ProjectReference->WithMetadataValue('Name', 'Protobuf.Generator')->Count())' > 0">
+    <PropertyGroup>
+      <_ProtobufTargetsPath>$(MSBuildThisFileDirectory)build\Protobuf.Generator.targets</_ProtobufTargetsPath>
+    </PropertyGroup>
+
+    <!-- 导入 targets 文件（如果存在） -->
+    <Import Project="$(_ProtobufTargetsPath)" Condition="Exists('$(_ProtobufTargetsPath)')" />
+  </Target>
+
+</Project>
