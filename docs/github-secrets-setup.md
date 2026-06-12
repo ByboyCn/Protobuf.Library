@@ -1,49 +1,69 @@
 # GitHub Actions Secrets 配置指南
 
-为了使项目的 CI/CD 流水线正常工作，需要在 GitHub 仓库中配置以下 secrets。
+为了使项目的 CI/CD 流水线正常工作，需要配置 GitHub Actions 工作流。
 
-## 必需的 Secrets
+## 认证方式
 
-### 1. NUGET_API_KEY（可选）
-用于发布包到 NuGet.org。
+### 1. NuGet.org 可信发布（推荐）
+本项目使用 **NuGet.org 可信发布**（Trusted Publishing）功能，这是基于 OIDC 的无密码认证方式，更加安全。
 
-**获取步骤：**
+**优势：**
+- 无需管理 API Keys
+- 自动化的令牌管理
+- 更高的安全性
+- 符合现代安全最佳实践
+
+**配置步骤：**
+
+#### 第一步：在 NuGet.org 创建可信发布策略
 1. 访问 [NuGet.org](https://www.nuget.org/) 并登录
-2. 点击右上角头像 → Account Settings
-3. 选择 "API Keys" 部分
-4. 点击 "Create" 创建新的 API Key
-5. 配置以下信息：
-   - **Key name**: 任意名称，如 "GitHub Actions"
-   - **Glob pattern**: `*` (允许推送所有包)
-   - **Expires**: 选择适当的有效期
-6. 复制生成的 API Key
+2. 进入你的账户设置
+3. 选择 "Trusted Publishing" 或 "可信发布"
+4. 点击 "Create new policy" 或 "创建新策略"
+5. 填写以下信息：
+   - **Policy name**: 任意名称，如 "GitHub Actions"
+   - **Repository**: `ByboyCn/Protobuf.Library`（你的 GitHub 仓库）
+   - **Workflow**: `.github/workflows/build-and-publish.yml`
+   - **Environment**: 可以选择特定环境或留空
+   - **Branch pattern**: `main` 或 `master`
+6. 保存策略
 
-**在 GitHub 中配置：**
-1. 访问你的 GitHub 仓库
-2. 进入 Settings → Secrets and variables → Actions
-3. 点击 "New repository secret"
-4. Name: `NUGET_API_KEY`
-5. Value: 粘贴你的 NuGet API Key
-6. 点击 "Add secret"
+#### 第二步：无需配置 Secrets
+可信发布不需要任何 GitHub Secrets！GitHub Actions 会自动处理 OIDC 认证。
 
-**注意：** 如果你不打算发布到 NuGet.org，这个 secret 可以不配置。
+#### 第三步：发布新版本
+```bash
+# 创建版本标签
+git tag v1.0.0
 
-### 2. GITHUB_TOKEN（自动提供）
+# 推送标签到远程
+git push origin v1.0.0
+```
+
+**注意：** 首次使用可信发布时，策略可能处于 "pending full activation" 状态，需要等待几分钟让系统验证配置。
+
+### 2. GitHub Packages（自动配置）
 用于发布包到 GitHub Packages。
 
 **说明：**
-- 这个 secret 由 GitHub Actions 自动提供，无需手动配置
-- 在工作流中通过 `${{ secrets.GITHUB_TOKEN }}` 引用
+- 使用 GitHub 自动提供的 `GITHUB_TOKEN`
+- 无需手动配置任何 secrets
 - 需要仓库的 `packages: write` 权限
 
 ## 权限要求
 
 ### GitHub Packages 发布
-工作流需要以下权限：
 ```yaml
 permissions:
   packages: write    # 写入 GitHub Packages
   contents: read     # 读取仓库内容
+```
+
+### NuGet.org 可信发布
+```yaml
+permissions:
+  contents: read     # 读取仓库内容
+  id-token: write    # OIDC 认证必需
 ```
 
 这些权限已在工作流文件中正确配置。
@@ -56,51 +76,50 @@ permissions:
 ### 仅在版本标签时运行
 创建并推送版本标签时触发（如 `v1.0.0`）：
 - `publish-github-packages` - 发布到 GitHub Packages
-- `publish-nuget-org` - 发布到 NuGet.org（需要 NUGET_API_KEY）
+- `publish-nuget-org` - 发布到 NuGet.org（使用可信发布）
 - `create-github-release` - 创建 GitHub Release
 
-**发布新版本的步骤：**
-```bash
-# 创建版本标签
-git tag v1.0.0
+## 可信发布故障排除
 
-# 推送标签到远程
-git push origin v1.0.0
-```
+### 策略处于 "pending" 状态
+**原因：** 新创建的可信发布策略需要几分钟来激活
+**解决：** 等待 5-10 分钟，然后重试推送
 
-## 验证配置
+### 认证失败
+**原因：** 可信发布策略配置不正确
+**解决：**
+1. 检查仓库名称是否正确
+2. 确认工作流文件路径正确
+3. 验证分支模式匹配
 
-### 检查 Secrets 是否正确配置
-1. 访问仓库的 Settings → Secrets and variables → Actions
-2. 确认 `NUGET_API_KEY` 存在（如果需要发布到 NuGet.org）
-
-### 测试工作流
-1. 推送代码到 main 分支触发构建
-2. 创建版本标签测试完整发布流程
-
-## 故障排除
+### OIDC 令牌错误
+**原因：** 缺少 `id-token: write` 权限
+**解决：** 确保工作流包含 `permissions: id-token: write`
 
 ### GitHub Packages 发布失败 (404 错误)
 **原因：** NuGet 源未正确配置
 **解决：** 工作流已修复，会自动配置 GitHub Packages 源
 
-### NuGet.org 发布失败 (认证错误)
-**原因：** NUGET_API_KEY 未配置或无效
-**解决：** 检查 secret 是否正确配置，API Key 是否有效
+## 可信发布与传统 API Key 对比
 
-### 权限错误
-**原因：** 工作流缺少必要的权限
-**解决：** 检查工作流中的 `permissions` 配置
+| 特性 | 可信发布 | API Key |
+|------|----------|---------|
+| 安全性 | 高（OIDC） | 中（静态密钥） |
+| 维护 | 自动 | 手动轮换 |
+| 配置复杂度 | 简单 | 中等 |
+| 有效期 | 动态令牌 | 永久或定期 |
+| 推荐度 | ✅ 推荐 | 备选方案 |
 
 ## 安全建议
 
-1. **定期轮换 API Keys**：定期更新 NuGet API Key
-2. **限制权限**：API Key 只授予必要的权限
-3. **监控使用**：定期检查 NuGet.org 和 GitHub Packages 的活动日志
-4. **不要泄露**：永远不要在代码中硬编码 API Keys
+1. **使用可信发布**：优先使用 OIDC 认证而非静态 API Keys
+2. **限制权限**：只授予工作流必要的权限
+3. **监控活动**：定期检查 NuGet.org 和 GitHub Packages 的活动日志
+4. **定期审查**：检查可信发布策略的配置
 
 ## 相关链接
 
+- [NuGet.org 可信发布](https://learn.microsoft.com/zh-cn/nuget/nuget-org/trusted-publishing)
+- [GitHub Actions OIDC](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-nuget)
 - [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
-- [NuGet API Keys](https://docs.nuget.org/docs/reference/api-keys)
 - [GitHub Packages](https://docs.github.com/en/packages)
