@@ -2,12 +2,22 @@
 <Project>
   <!--
     Protobuf Source Generator Targets
+
     这个文件定义了构建时自动处理 .proto 文件的逻辑
+    支持两种模式：
+    1. Source Generator 模式（默认）：在内存中生成代码，IDE 支持
+    2. MSBuild 任务模式：将生成的代码写入 obj 目录，类似于 Grpc.Tools
   -->
 
   <PropertyGroup>
     <!-- 启用源生成器支持 -->
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <!-- 设置生成的代码输出目录 -->
+    <ProtobufGeneratedCodeDir>$(IntermediateOutputPath)GeneratedProtobuf</ProtobufGeneratedCodeDir>
+
+    <!-- 是否启用文件生成模式（默认为 false，使用 Source Generator） -->
+    <ProtobufEnableFileGeneration Condition="'$(ProtobufEnableFileGeneration)' == ''">false</ProtobufEnableFileGeneration>
   </PropertyGroup>
 
   <!-- 默认的 Proto 文件包含模式 -->
@@ -21,20 +31,75 @@
     <AdditionalFiles Include="@(ProtoFile)" />
   </ItemGroup>
 
-  <!-- 输出构建信息 -->
-  <Target Name="ProtobufDisplayInfo" BeforeTargets="CoreCompile" Condition="'$(DesignTimeBuild)' != 'true'">
+  <!-- ================================================================
+       文件生成模式（类似 Grpc.Tools）
+       ================================================================ -->
+
+  <!-- 当启用文件生成模式时，禁用 Source Generator 并使用文件生成 -->
+  <Target Name="ProtobufGenerateCodeToFile" BeforeTargets="CoreCompile" Condition="'$(ProtobufEnableFileGeneration)' == 'true'">
+
     <PropertyGroup>
-      <_ProtoFileCount>@(AdditionalFiles->WithMetaValue('FileType', 'proto')->Count())</_ProtoFileCount>
+      <_ProtoFileCount>@(AdditionalFiles->Count())</_ProtoFileCount>
     </PropertyGroup>
 
-    <Message Text="Protobuf Generator: Found $(_ProtoFileCount) .proto file(s)" Importance="low" Condition="'$(_ProtoFileCount)' != '0'" />
+    <Message Text="Protobuf Generator (File Mode): Found $(_ProtoFileCount) .proto file(s)" Importance="high" />
 
     <!-- 显示找到的 proto 文件 -->
+    <Message Text="  - %(AdditionalFiles.Identity)" Importance="normal" Condition="'$(_ProtoFileCount)' != '0'" />
+
+    <!-- 创建输出目录 -->
+    <MakeDir Directories="$(ProtobufGeneratedCodeDir)" />
+
+    <!-- 收集所有 proto 文件 -->
     <ItemGroup>
-      <_ProtoFiles>@(AdditionalFiles->WithMetaValue('FileType', 'proto'))</_ProtoFiles>
+      <_ProtoFiles Include="@(AdditionalFiles)" />
     </ItemGroup>
 
-    <Message Text="  - %(_ProtoFiles.Identity)" Importance="low" Condition="'$(_ProtoFileCount)' != '0'" />
+    <!-- 为每个 proto 文件生成代码 -->
+    <GenerateProtobufCode
+      ProtoFiles="@(_ProtoFiles)"
+      OutputDirectory="$(ProtobufGeneratedCodeDir)">
+      <Output TaskParameter="GeneratedFiles" ItemName="ProtobufGeneratedFiles" />
+      <Output TaskParameter="Diagnostics" ItemName="ProtobufDiagnostics" />
+    </GenerateProtobufCode>
+
+    <!-- 将生成的文件添加到编译 -->
+    <ItemGroup>
+      <Compile Include="@(ProtobufGeneratedFiles)" />
+      <FileWrites Include="@(ProtobufGeneratedFiles)" />
+    </ItemGroup>
+
+    <!-- 显示生成的文件 -->
+    <Message Text="Generated @(ProtobufGeneratedFiles->Count()) file(s):" Importance="high" />
+    <Message Text="  - %(ProtobufGeneratedFiles.Identity)" Importance="normal" />
+
+    <!-- 显示诊断信息 -->
+    <Message Text="%(ProtobufDiagnostics.Message)" Importance="normal" Condition="%(ProtobufDiagnostics.Level) == 'Info'" />
+    <Warning Text="%(ProtobufDiagnostics.Message)" File="%(ProtobufDiagnostics.FilePath)" Condition="%(ProtobufDiagnostics.Level) == 'Warning'" />
+    <Error Text="%(ProtobufDiagnostics.Message)" File="%(ProtobufDiagnostics.FilePath)" Condition="%(ProtobufDiagnostics.Level) == 'Error'" />
+
+  </Target>
+
+  <!-- ================================================================
+       Source Generator 模式（默认）
+       ================================================================ -->
+
+  <!-- 输出构建信息（仅在 Source Generator 模式下） -->
+  <Target Name="ProtobufDisplayInfo" BeforeTargets="CoreCompile" Condition="'$(DesignTimeBuild)' != 'true' AND '$(ProtobufEnableFileGeneration)' != 'true'">
+    <PropertyGroup>
+      <_ProtoFileCount>@(AdditionalFiles->Count())</_ProtoFileCount>
+    </PropertyGroup>
+
+    <Message Text="Protobuf Generator (Source Generator Mode): Found $(_ProtoFileCount) .proto file(s)" Importance="low" Condition="'$(_ProtoFileCount)' != '0'" />
+
+    <!-- 显示找到的 proto 文件 -->
+    <Message Text="  - %(AdditionalFiles.Identity)" Importance="low" Condition="'$(_ProtoFileCount)' != '0'" />
+  </Target>
+
+  <!-- 清理生成的文件 -->
+  <Target Name="ProtobufCleanGenerated" AfterTargets="Clean">
+    <Delete Files="@(ProtobufGeneratedFiles)" TreatErrorsAsWarnings="true" />
+    <RemoveDir Directories="$(ProtobufGeneratedCodeDir)" Condition="Exists('$(ProtobufGeneratedCodeDir)')" />
   </Target>
 
 </Project>

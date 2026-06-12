@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Protobuf.CodeGeneration</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Protobuf.Parser\Protobuf.Parser.csproj" />
+    <ProjectReference Include="..\Protobuf.Core\Protobuf.Core.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Protobuf.CodeGeneration</PackageId>
+    <Description>Shared code generation logic for Protobuf - Used by both Source Generator and MSBuild tasks</Description>
+    <PackageTags>protobuf;code-generation;generator</PackageTags>
+  </PropertyGroup>
+
+</Project>

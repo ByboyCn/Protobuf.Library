@@ -17,7 +17,8 @@
       "Bash(dotnet pack *)",
       "Bash(git add *)",
       "Bash(git commit -m '修复所有编译器警告 *)",
-      "Bash(dotnet restore *)"
+      "Bash(dotnet restore *)",
+      "Bash(git commit -m '修复 CI/CD 中的 NuGet 包源配置问题 *)"
     ],
     "additionalDirectories": [
       "D:\\source\\Labrarys\\Protobuf.Labrary\\src"

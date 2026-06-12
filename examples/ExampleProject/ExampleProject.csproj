@@ -18,6 +18,14 @@
 
     <!-- 可选：设置生成器输出详细程度 -->
     <ProtobufGeneratorVerbosity>normal</ProtobufGeneratorVerbosity>
+
+    <!-- ========================================== -->
+    <!--      文件生成模式配置（类似 Grpc.Tools）  -->
+    <!-- ========================================== -->
+
+    <!-- 启用文件生成模式：生成的代码将写入 obj/GeneratedProtobuf 目录 -->
+    <!-- 暂时禁用以调试 -->
+    <ProtobufEnableFileGeneration>true</ProtobufEnableFileGeneration>
   </PropertyGroup>
 
   <ItemGroup>

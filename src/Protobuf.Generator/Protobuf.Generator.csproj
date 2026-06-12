@@ -18,47 +18,61 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Protobuf.Parser\Protobuf.Parser.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" PrivateAssets="all" />
-    <ProjectReference Include="..\Protobuf.Core\Protobuf.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" PrivateAssets="all" />
+    <!-- 引用共享的代码生成库，确保它们作为分析器依赖项 -->
+    <ProjectReference Include="..\Protobuf.CodeGeneration\Protobuf.CodeGeneration.csproj" ReferenceOutputAssembly="true" PrivateAssets="all" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\Protobuf.Parser\Protobuf.Parser.csproj" ReferenceOutputAssembly="true" PrivateAssets="all" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\Protobuf.Core\Protobuf.Core.csproj" ReferenceOutputAssembly="true" PrivateAssets="all" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- 打包所有依赖项到 analyzer 目录 -->
+    <None Include="$(OutputPath)Protobuf.CodeGeneration.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(OutputPath)Protobuf.CodeGeneration.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.CodeGeneration.pdb')" />
     <None Include="$(OutputPath)Protobuf.Parser.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(OutputPath)Protobuf.Parser.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Parser.pdb')" />
     <None Include="$(OutputPath)Protobuf.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(OutputPath)Protobuf.Core.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Core.pdb')" />
+    <None Include="$(OutputPath)Protobuf.Core.xml" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Core.xml')" />
   </ItemGroup>
 
   <PropertyGroup>
     <!-- 项目特定的元数据 -->
     <PackageId>Protobuf.Generator</PackageId>
-    <Description>Source Generator for Protobuf3 - Auto-generates C# code from .proto files with AOT support</Description>
-    <PackageTags>protobuf;generator;source-generator;roslyn;analyzers;aot;protobuf3;csharp;dotnet;code-generation</PackageTags>
+    <Description>Source Generator for Protobuf3 - Auto-generates C# code from .proto files with AOT support. Supports both in-memory and file-based code generation.</Description>
+    <PackageTags>protobuf;generator;source-generator;roslyn;analyzers;aot;protobuf3;csharp;dotnet;code-generation;grpc-tools</PackageTags>
     <GeneratorConfigurations>$(GeneratorConfigurations)</GeneratorConfigurations>
 
     <PackageReleaseNotes>
-v1.0.0 - Initial stable release
+v1.1.0 - Dual Mode Release
 
-⚡ Source Generator Features:
-- Compile-time code generation
-- Zero runtime overhead
-- AOT-friendly generated code
-- Complete type safety
-- IDE IntelliSense support
-- Automatic code regeneration
+⚡ New Features:
+- File-based code generation (similar to Grpc.Tools)
+- Shared code generation library
+- MSBuild tasks for build-time code generation
+- Generated files written to obj directory
 
-🔧 Generated Code Features:
-- hasXxx() methods for field checking
-- SetXxx() and ClearXxx() methods
-- IReadOnlyList and IReadOnlyDictionary support
-- Oneof case management
-- Nested message support
-- Reflection API descriptors
-- JSON serialization methods
+🎯 Usage Modes:
 
-🎯 Usage:
-1. Add .proto files to your project
-2. Reference this package as analyzer
-3. Build project - code is auto-generated
-4. Use generated C# classes directly
+1. Source Generator Mode (Default):
+   - In-memory code generation
+   - Full IDE IntelliSense support
+   - Zero build-time overhead
+
+2. File Generation Mode:
+   - Set ProtobufEnableFileGeneration=true
+   - Generated files written to obj/GeneratedProtobuf
+   - Similar to Grpc.Tools workflow
+
+📝 Usage:
+
+Default (Source Generator):
+1. Add .proto files to project
+2. Build project - code auto-generated
+
+File Generation Mode:
+1. Add .proto files to project
+2. Add to project file: &lt;ProtobufEnableFileGeneration&gt;true&lt;/ProtobufEnableFileGeneration&gt;
+3. Build - files generated in obj/GeneratedProtobuf
 
 💡 Compatibility:
 - .NET 8.0+

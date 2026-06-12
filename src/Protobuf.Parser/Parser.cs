@@ -115,10 +115,18 @@ public sealed class Parser
     {
         Expect(TokenType.Package);
 
-        if (_currentToken.Type == TokenType.Identifier)
+        var packageName = new System.Text.StringBuilder();
+
+        // 支持带点的包名（如 Example.Common）
+        while (_currentToken.Type == TokenType.Identifier || _currentToken.Type == TokenType.Dot)
         {
-            protoFile.Package = _currentToken.Value;
+            packageName.Append(_currentToken.Value);
             Advance();
+        }
+
+        if (packageName.Length > 0)
+        {
+            protoFile.Package = packageName.ToString();
         }
         else
         {
@@ -341,7 +349,8 @@ public sealed class Parser
         field.TypeName = customTypeName;
 
         // 解析名称
-        if (_currentToken.Type == TokenType.Identifier)
+        // 在 proto3 中，关键字也可以作为字段名（只要不是符号或特殊类型）
+        if (IsValidFieldName(_currentToken))
         {
             field.Name = _currentToken.Value;
             Advance();
@@ -381,6 +390,66 @@ public sealed class Parser
 
         Expect(TokenType.SemiColon);
         return field;
+    }
+
+    /// <summary>
+    /// 检查 token 是否可以作为字段名
+    /// 在 proto3 中，大多数关键字也可以作为字段名
+    /// </summary>
+    private bool IsValidFieldName(Token token)
+    {
+        // 标识符总是可以作为字段名
+        if (token.Type == TokenType.Identifier)
+            return true;
+
+        // 排除明显不能作为字段名的符号类型
+        if (token.Type == TokenType.Dot ||
+            token.Type == TokenType.Comma ||
+            token.Type == TokenType.SemiColon ||
+            token.Type == TokenType.LeftBrace ||
+            token.Type == TokenType.RightBrace ||
+            token.Type == TokenType.LeftBracket ||
+            token.Type == TokenType.RightBracket ||
+            token.Type == TokenType.Equal ||
+            token.Type == TokenType.LessThan ||
+            token.Type == TokenType.GreaterThan ||
+            token.Type == TokenType.EndOfFile ||
+            token.Type == TokenType.Whitespace ||
+            token.Type == TokenType.Comment ||
+            token.Type == TokenType.Unknown)
+        {
+            return false;
+        }
+
+        // 大多数关键字可以作为字段名（message, enum, service 等）
+        // 但类型关键字不应该作为字段名（如 string, int32 等）
+        if (IsTypeKeyword(token.Type))
+            return false;
+
+        // 其他关键字可以作为字段名
+        return !string.IsNullOrEmpty(token.Value);
+    }
+
+    /// <summary>
+    /// 检查是否为类型关键字（不能作为字段名）
+    /// </summary>
+    private bool IsTypeKeyword(TokenType type)
+    {
+        return type == TokenType.Double ||
+               type == TokenType.Float ||
+               type == TokenType.Int32 ||
+               type == TokenType.Int64 ||
+               type == TokenType.UInt32 ||
+               type == TokenType.UInt64 ||
+               type == TokenType.SInt32 ||
+               type == TokenType.SInt64 ||
+               type == TokenType.Fixed32 ||
+               type == TokenType.Fixed64 ||
+               type == TokenType.SFixed32 ||
+               type == TokenType.SFixed64 ||
+               type == TokenType.Bool ||
+               type == TokenType.String ||
+               type == TokenType.Bytes;
     }
 
     /// <summary>
@@ -453,13 +522,44 @@ public sealed class Parser
                 return FieldType.Bytes;
 
             case TokenType.Identifier:
-                customTypeName = _currentToken.Value;
-                Advance();
+                // 可能是点号分隔的类型名（如 Example.Common.Timestamp）
+                customTypeName = ParseDottedTypeName();
                 return FieldType.Message; // 假定是消息或枚举类型
 
             default:
                 throw NewParseException($"Expected field type, got: {_currentToken.Type}");
         }
+    }
+
+    /// <summary>
+    /// 解析点号分隔的类型名（如 Example.Common.Timestamp）
+    /// </summary>
+    private string ParseDottedTypeName()
+    {
+        var typeName = new System.Text.StringBuilder();
+
+        // 第一个部分必须是标识符
+        if (_currentToken.Type == TokenType.Identifier)
+        {
+            typeName.Append(_currentToken.Value);
+            Advance();
+        }
+        else
+        {
+            throw NewParseException($"Expected type name, got: {_currentToken.Type}");
+        }
+
+        // 继续读取点和标识符
+        while (_currentToken.Type == TokenType.Dot && _nextToken.Type == TokenType.Identifier)
+        {
+            typeName.Append(_currentToken.Value); // 添加点
+            Advance(); // 消费点
+
+            typeName.Append(_currentToken.Value); // 添加标识符
+            Advance(); // 消费标识符
+        }
+
+        return typeName.ToString();
     }
 
     /// <summary>

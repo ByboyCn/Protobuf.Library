@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!--
+    Protobuf.Generator.DumpTargets
+
+    这个 targets 文件在构建后将生成的代码保存到磁盘
+    方便用户查看和调试
+  -->
+
+  <Target Name="DumpGeneratedSourceCode" AfterTargets="CoreCompile">
+    <PropertyGroup>
+      <GeneratedCodeOutputDir>$(IntermediateOutputPath)GeneratedProtobuf</GeneratedCodeOutputDir>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(GeneratedCodeOutputDir)" />
+
+    <!-- 使用反射获取生成的源代码 -->
+    <UsingTask TaskName="GetGeneratedSource" TaskFactoryCode="GetGeneratedSourceCode" />
+
+    <GetGeneratedSource SourceAssembly="$(TargetPath)">
+      <Output TaskParameter="GeneratedFiles" ItemName="GeneratedFiles" />
+    </GetGeneratedSource>
+  </Target>
+</Project>
