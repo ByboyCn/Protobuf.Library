@@ -1,0 +1,30 @@
+<Project>
+  <PropertyGroup>
+    <!-- 统一的版本号管理 -->
+    <!-- 所有项目都会使用这个版本号 -->
+    <Version>1.0.0</Version>
+
+    <!-- 可以通过环境变量覆盖 -->
+    <!-- <Version>$(PACKAGE_VERSION)</Version> -->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- 通用的包信息（所有项目共享） -->
+    <Authors>Protobuf.Library Contributors</Authors>
+    <Company>Protobuf.Library</Company>
+    <Product>Protobuf.Library</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/ByboyCn/Protobuf.Library</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/ByboyCn/Protobuf.Library</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+</Project>

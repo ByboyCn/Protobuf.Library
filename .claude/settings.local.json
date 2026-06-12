@@ -11,7 +11,13 @@
       "Bash(dotnet publish *)",
       "Bash(bin\\\\Release\\\\net8.0\\\\Examples.exe -r)",
       "Bash(examples/Examples/bin/Release/net8.0/Examples.exe -r)",
-      "Bash(bin/Release/net8.0/Examples.exe -r)"
+      "Bash(bin/Release/net8.0/Examples.exe -r)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(dotnet pack *)",
+      "Bash(git add *)",
+      "Bash(git commit -m '修复所有编译器警告 *)",
+      "Bash(dotnet restore *)"
     ],
     "additionalDirectories": [
       "D:\\source\\Labrarys\\Protobuf.Labrary\\src"

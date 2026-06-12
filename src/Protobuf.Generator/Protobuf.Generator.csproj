@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <DevelopmentDependency>true</DevelopmentDependency>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <IncludeSymbols>false</IncludeSymbols>
@@ -17,23 +18,63 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- 将依赖项作为私有程序集包含 -->
     <ProjectReference Include="..\Protobuf.Parser\Protobuf.Parser.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" PrivateAssets="all" />
     <ProjectReference Include="..\Protobuf.Core\Protobuf.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- 打包依赖项 DLL -->
     <None Include="$(OutputPath)Protobuf.Parser.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
     <None Include="$(OutputPath)Protobuf.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
+    <!-- 项目特定的元数据 -->
     <PackageId>Protobuf.Generator</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Your Name</Authors>
-    <Description>Protobuf3 Source Generator</Description>
+    <Description>Source Generator for Protobuf3 - Auto-generates C# code from .proto files with AOT support</Description>
+    <PackageTags>protobuf;generator;source-generator;roslyn;analyzers;aot;protobuf3;csharp;dotnet;code-generation</PackageTags>
     <GeneratorConfigurations>$(GeneratorConfigurations)</GeneratorConfigurations>
+
+    <PackageReleaseNotes>
+v1.0.0 - Initial stable release
+
+⚡ Source Generator Features:
+- Compile-time code generation
+- Zero runtime overhead
+- AOT-friendly generated code
+- Complete type safety
+- IDE IntelliSense support
+- Automatic code regeneration
+
+🔧 Generated Code Features:
+- hasXxx() methods for field checking
+- SetXxx() and ClearXxx() methods
+- IReadOnlyList and IReadOnlyDictionary support
+- Oneof case management
+- Nested message support
+- Reflection API descriptors
+- JSON serialization methods
+
+🎯 Usage:
+1. Add .proto files to your project
+2. Reference this package as analyzer
+3. Build project - code is auto-generated
+4. Use generated C# classes directly
+
+💡 Compatibility:
+- .NET 8.0+
+- Visual Studio 2022+
+- JetBrains Rider
+- VS Code with C# extension
+    </PackageReleaseNotes>
+
+    <IsDevelopmentDependency>true</IsDevelopmentDependency>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- README 文件 -->
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <!-- 图标文件 -->
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>

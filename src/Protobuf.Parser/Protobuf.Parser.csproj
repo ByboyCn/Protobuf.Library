@@ -12,10 +12,35 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <!-- 项目特定的元数据 -->
     <PackageId>Protobuf.Parser</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Your Name</Authors>
-    <Description>Protobuf3 Proto File Parser</Description>
+    <Description>Protobuf3 .proto file parser with full AST support - Parse .proto files to generate C# code</Description>
+    <PackageTags>protobuf;parser;proto;ast;protobuf3;csharp;dotnet;code-generation</PackageTags>
+
+    <PackageReleaseNotes>
+v1.0.0 - Initial stable release
+
+🔧 Features:
+- Complete Protobuf3 grammar support
+- Abstract Syntax Tree (AST) generation
+- Support for all message types
+- Enum and nested message parsing
+- Error handling and validation
+- Compatible with Source Generator
+
+📚 Usage:
+- Parse .proto files at runtime
+- Generate code programmatically
+- Validate proto file syntax
+- Extract message and enum definitions
+    </PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- README 文件 -->
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <!-- 图标文件 -->
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>
