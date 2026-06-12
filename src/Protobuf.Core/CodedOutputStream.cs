@@ -113,7 +113,6 @@ public sealed class CodedOutputStream : IDisposable
     }
 
     /// <summary>
-    /// <summary>
     /// 写入 int64
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

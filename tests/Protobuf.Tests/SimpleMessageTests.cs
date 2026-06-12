@@ -56,7 +56,7 @@ public class SimpleMessageTests
 
         Assert.Equal(999, message2.Id);
         Assert.Equal("", message2.Name);
-        Assert.Equal(false, message2.Active);
+        Assert.False(message2.Active);
     }
 
     [Fact]
@@ -71,13 +71,13 @@ public class SimpleMessageTests
         var data = output.ToByteArray();
 
         // 空消息应该序列化为空字节数组
-        Assert.Equal(0, data.Length);
+        Assert.Empty(data);
 
         var message2 = SimpleMessage.Parser.ParseFrom(data);
 
         Assert.Equal(0, message2.Id);
         Assert.Equal("", message2.Name);
-        Assert.Equal(false, message2.Active);
+        Assert.False(message2.Active);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class SimpleMessageTests
         // message1 应该包含 message2 的所有值
         Assert.Equal(200, message1.Id);
         Assert.Equal("First", message1.Name); // 保持原有值
-        Assert.Equal(true, message1.Active);
+        Assert.True(message1.Active);
     }
 
     [Fact]

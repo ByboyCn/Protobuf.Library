@@ -12,10 +12,54 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <!-- 项目特定的元数据 -->
     <PackageId>Protobuf.Reflection</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Your Name</Authors>
-    <Description>AOT-Friendly Protobuf3 Reflection API</Description>
+    <Description>AOT-friendly reflection API for Protobuf3 messages - Runtime metadata and field access without System.Reflection</Description>
+    <PackageTags>protobuf;reflection;aot;metadata;runtime;protobuf3;csharp;dotnet</PackageTags>
+
+    <PackageReleaseNotes>
+v1.0.0 - Initial stable release
+
+🔮 Reflection API Features:
+- MessageDescriptor and FieldDescriptor classes
+- IFieldAccessor for dynamic field access
+- Type-safe field accessors
+- AOT-friendly metadata generation
+- Zero System.Reflection dependency
+
+🚀 AOT Compatibility:
+- Compile-time metadata generation
+- Zero runtime reflection
+- NativeAOT compilation support
+- No IL trimming issues
+- Full performance optimization
+
+📊 Use Cases:
+- Dynamic message processing
+- Generic serialization frameworks
+- Validation and inspection tools
+- Debugging and logging utilities
+- Metadata-driven operations
+
+💡 Design Philosophy:
+- Zero reflection = Zero runtime overhead
+- Compile-time generation = Maximum optimization
+- Immutable metadata = Thread safety
+- Type-safe accessors = Compile-time checking
+
+🎯 Generated API:
+- Message.Descriptor - Static metadata
+- Message.GetFieldAccessors() - All field accessors
+- Type-safe GetValue/SetValue methods
+- HasValue/Clear methods for each field
+    </PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- README 文件 -->
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <!-- 图标文件 -->
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>

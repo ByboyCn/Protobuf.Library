@@ -12,10 +12,47 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <!-- 项目特定的元数据 -->
     <PackageId>Protobuf.Json</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Your Name</Authors>
-    <Description>Protobuf3 JSON Serialization Support (PascalCase)</Description>
+    <Description>JSON serialization support for Protobuf3 messages (PascalCase) - Convert Protobuf messages to/from JSON</Description>
+    <PackageTags>protobuf;json;serialization;protobuf3;pascalcase;csharp;dotnet</PackageTags>
+
+    <PackageReleaseNotes>
+v1.0.0 - Initial stable release
+
+📝 JSON Serialization Features:
+- PascalCase JSON format (C# naming convention)
+- Full message serialization/deserialization
+- Nested message support
+- Collection support (lists, dictionaries)
+- Enum handling
+- Type-safe conversion
+
+🔧 Usage:
+- ToJson() - Serialize message to JSON
+- FromJson() - Deserialize JSON to message
+- Reflection-based (default mode)
+- Interface-based mode for custom logic
+
+⚡ Performance:
+- Efficient JSON writer/reader
+- Minimal memory allocations
+- Compatible with System.Text.Json
+- AOT-friendly implementation
+
+💡 Use Cases:
+- Debugging and logging
+- Configuration files
+- Interoperability with JSON APIs
+- Human-readable data exchange
+    </PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- README 文件 -->
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <!-- 图标文件 -->
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>

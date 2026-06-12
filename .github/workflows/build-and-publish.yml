@@ -1,3 +1,6 @@
+# 主分支已从 master 改为 main
+# 如需更改主分支名称，请更新下面的 branches 配置
+
 name: Build and Publish to GitHub Packages
 
 on:
@@ -28,12 +31,8 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Configure NuGet for GitHub Packages
-      run: |
-        dotnet nuget add source --name "github" ${{ env.GITHUB_PACKAGE_REGISTRY }} --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --source https://api.nuget.org/v3/index.json
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
@@ -71,19 +70,15 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Configure NuGet for GitHub Packages
-      run: |
-        dotnet nuget add source --name "github" ${{ env.GITHUB_PACKAGE_REGISTRY }} --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-
     - name: Publish to GitHub Packages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         for package in ./artifacts/*.nupkg; do
           if [[ $package != *.symbols.nupkg ]]; then
-            dotnet nuget push $package --source "github" --skip-duplicate
+            dotnet nuget push $package --source https://nuget.pkg.github.com/${{ github.repository }} --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
           fi
         done
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-github-release:
     needs: build
@@ -116,6 +111,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      id-token: write  # 启用 GitHub OIDC 令牌发放
 
     steps:
     - name: Download artifacts
@@ -129,12 +126,16 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Publish to NuGet.org (Optional)
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{ secrets.NUGET_USER }}  # 你的 nuget.org 用户名（不是邮箱）
+
+    - name: Publish to NuGet.org
       run: |
         for package in ./artifacts/*.nupkg; do
           if [[ $package != *.symbols.nupkg ]]; then
-            dotnet nuget push $package --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            dotnet nuget push $package --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           fi
         done
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

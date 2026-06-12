@@ -7,13 +7,39 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Aot>true</Aot>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- 项目特定的元数据 -->
     <PackageId>Protobuf.Core</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Your Name</Authors>
-    <Description>Lightweight Protobuf3 Runtime Library with AOT Support</Description>
+    <Description>Lightweight Protobuf3 Runtime Library with AOT Support - Core runtime with zero dependencies</Description>
+    <PackageTags>protobuf;serialization;aot;nativeaot;protobuf3;google-protobuf;performance;csharp;dotnet</PackageTags>
+
+    <PackageReleaseNotes>
+v1.0.0 - Initial stable release
+
+✨ Features:
+- Complete Protobuf3 support
+- AOT-friendly reflection API
+- JSON serialization support (PascalCase)
+- Zero external dependencies
+- NativeAOT compilation support
+- High performance with zero runtime overhead
+
+🔧 Supported Types:
+- All primitive types (double, float, int32, int64, uint32, uint64, etc.)
+- Complex types (repeated, oneof, map&lt;K,V&gt;)
+- Nested messages and enums
+- Full serialization/deserialization
+
+🚀 Performance:
+- Compile-time code generation
+- Static dispatch and inlining
+- Immutable data structures
+- Thread-safe operations
+    </PackageReleaseNotes>
   </PropertyGroup>
+
 
 </Project>
