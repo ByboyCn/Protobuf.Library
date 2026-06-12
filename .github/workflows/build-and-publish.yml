@@ -74,9 +74,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # 配置 GitHub Packages 为 NuGet 源
+        dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository }}/index.json --name "github" --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+
+        # 推送包到 GitHub Packages
         for package in ./artifacts/*.nupkg; do
           if [[ $package != *.symbols.nupkg ]]; then
-            dotnet nuget push $package --source https://nuget.pkg.github.com/${{ github.repository }} --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+            dotnet nuget push $package --source github --skip-duplicate
           fi
         done
 
@@ -111,8 +115,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      id-token: write  # 启用 GitHub OIDC 令牌发放
 
     steps:
     - name: Download artifacts
@@ -126,16 +128,10 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: NuGet login (OIDC → temp API key)
-      uses: NuGet/login@v1
-      id: login
-      with:
-        user: ${{ secrets.NUGET_USER }}  # 你的 nuget.org 用户名（不是邮箱）
-
     - name: Publish to NuGet.org
       run: |
         for package in ./artifacts/*.nupkg; do
           if [[ $package != *.symbols.nupkg ]]; then
-            dotnet nuget push $package --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            dotnet nuget push $package --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
           fi
         done
