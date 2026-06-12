@@ -142,13 +142,14 @@ jobs:
         # 只发布核心库包，跳过示例项目
         for package in ./artifacts/*.nupkg; do
           if [[ $package != *.symbols.nupkg ]]; then
-            # 检查是否是示例项目
-            if [[ $package =~ Examples\.nupkg ]]; then
-              echo "⏭️  Skipping example package: $package"
+            # 检查是否是示例项目（更精确的匹配）
+            package_name=$(basename "$package")
+            if [[ "$package_name" =~ ^Examples\. ]]; then
+              echo "⏭️  Skipping example package: $package_name"
               continue
             fi
             # 发布核心库包
-            dotnet nuget push $package --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-            echo "✅ Published: $package"
+            dotnet nuget push "$package" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+            echo "✅ Published: $package_name"
           fi
         done
