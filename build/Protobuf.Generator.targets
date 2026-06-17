@@ -10,8 +10,8 @@
   -->
 
   <PropertyGroup>
-    <!-- 启用源生成器支持 -->
-    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <!-- EnforceExtendedAnalyzerRules 只属于生成器项目自身（见 Protobuf.Generator.csproj），
+         不能塞给消费方项目，所以不在这里设置。 -->
 
     <!-- 设置生成的代码输出目录 -->
     <ProtobufGeneratedCodeDir>$(IntermediateOutputPath)GeneratedProtobuf</ProtobufGeneratedCodeDir>
@@ -45,7 +45,7 @@
        ================================================================ -->
 
   <!-- 当启用文件生成模式时，禁用 Source Generator 并使用文件生成 -->
-  <Target Name="ProtobufGenerateCodeToFile" BeforeTargets="CoreCompile" Condition="'$(ProtobufEnableFileGeneration)' == 'true'">
+  <Target Name="ProtobufGenerateCodeToFile" BeforeTargets="CoreCompile" Condition="'$(ProtobufEnableFileGeneration)' == 'true' AND '$(_ProtobufTasksPath)' != ''">
 
     <PropertyGroup>
       <_ProtoFileCount>@(AdditionalFiles->Count())</_ProtoFileCount>

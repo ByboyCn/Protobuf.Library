@@ -33,6 +33,10 @@
     <None Include="$(OutputPath)Protobuf.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
     <None Include="$(OutputPath)Protobuf.Core.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Core.pdb')" />
     <None Include="$(OutputPath)Protobuf.Core.xml" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Core.xml')" />
+    <!-- 生成器自身的程序集（最关键！没有它，源生成器根本不会被加载）。
+         IncludeBuildOutput=false 会把主输出排除出 lib/，因此必须显式打包进 analyzers/dotnet/cs。 -->
+    <None Include="$(OutputPath)Protobuf.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(OutputPath)Protobuf.Generator.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Generator.pdb')" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -84,11 +88,11 @@ File Generation Mode:
     <IsDevelopmentDependency>true</IsDevelopmentDependency>
   </PropertyGroup>
 
+  <!-- 打包 build targets，使消费方安装包后自动 import，
+       从而自动把 **/*.proto 加入 AdditionalFiles，无需手写 workaround。 -->
   <ItemGroup>
-    <!-- README 文件 -->
-    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-    <!-- 图标文件 -->
-    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\build\Protobuf.Generator.props" Pack="true" PackagePath="build\" />
+    <None Include="..\..\build\Protobuf.Generator.targets" Pack="true" PackagePath="build\" />
   </ItemGroup>
 
 </Project>

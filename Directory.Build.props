@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- 统一的版本号管理 -->
     <!-- 所有项目都会使用这个版本号 -->
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
 
     <!-- 可以通过环境变量覆盖 -->
     <!-- <Version>$(PACKAGE_VERSION)</Version> -->
@@ -28,27 +28,14 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup Condition="Exists('..\..\icon.png')">
-    <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+  <!-- 统一打包仓库根目录的 README.md 和 icon.png 到所有包。
+       用 $(MSBuildThisFileDirectory)（=仓库根）定位文件，不再按项目深度猜相对路径，
+       避免与各 csproj 里的显式 <None> 重复打包（NU5118）。 -->
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)icon.png')">
+    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('..\..\..\icon.png')">
-    <None Include="..\..\..\icon.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists('..\..\..\..\icon.png')">
-    <None Include="..\..\..\..\icon.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists('..\..\README.md')">
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists('..\..\..\README.md')">
-    <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists('..\..\..\..\README.md')">
-    <None Include="..\..\..\..\README.md" Pack="true" PackagePath="\" />
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)README.md')">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

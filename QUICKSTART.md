@@ -4,13 +4,20 @@
 
 ### 安装和配置
 
+**通过 NuGet 包安装（推荐）：**
+
 ```bash
-# 1. 添加项目引用
-dotnet add reference ../Protobuf.Core/Protobuf.Core.csproj
-dotnet add reference ../Protobuf.Generator/Protobuf.Generator.csproj
-dotnet add reference ../Protobuf.Json/Protobuf.Json.csproj
-dotnet add reference ../Protobuf.Reflection/Protobuf.Reflection.csproj
+dotnet add package Protobuf.Generator   # 源生成器，自动扫描 **/*.proto
+dotnet add package Protobuf.Core        # 运行时（必需）
+dotnet add package Protobuf.Json        # JSON（可选）
+dotnet add package Protobuf.Reflection  # 反射 API（可选）
 ```
+
+安装后**无需额外配置**，把 `.proto` 放进项目并 `dotnet build` 即自动生成代码。
+
+> 在本仓库内部开发时，可改用下文「配置项目文件」里的 `ProjectReference` 方式。
+
+> GitHub Packages 源需要 PAT（`read:packages`）认证；NuGet.org 无需认证。
 
 ### 定义 .proto 文件
 

@@ -11,6 +11,22 @@
 
 ## 项目集成
 
+### 方式零：通过 NuGet 包引用（外部项目推荐）
+
+如果在本仓库之外使用，直接安装 NuGet 包即可，无需克隆源码：
+
+```bash
+dotnet add package Protobuf.Generator   # 源生成器，自动扫描 **/*.proto
+dotnet add package Protobuf.Core        # 运行时（必需）
+# 可选：
+dotnet add package Protobuf.Json
+dotnet add package Protobuf.Reflection
+```
+
+安装后**无需任何 `<AdditionalFiles>` 配置**，把 `.proto` 放进项目并 `dotnet build` 即自动生成代码。
+
+> 包源：NuGet.org 无需认证；GitHub Packages 源（`https://nuget.pkg.github.com/<owner>/index.json`）即使公开包也需 PAT（`read:packages`）。
+
 ### 方式一：完整集成（推荐）
 
 使用 Source Generator 自动生成代码，获得完整功能支持。

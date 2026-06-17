@@ -36,11 +36,6 @@ v1.0.0 - Initial stable release
     </PackageReleaseNotes>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- README 文件 -->
-    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-    <!-- 图标文件 -->
-    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
-  </ItemGroup>
+  <!-- README/icon 由 Directory.Build.props 统一打包，此处不再重复（避免 NU5118） -->
 
 </Project>

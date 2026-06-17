@@ -33,6 +33,24 @@
 
 ## 快速开始
 
+### 安装
+
+**方式 A：通过 NuGet 包引用（推荐，用于本项目之外的消费方）**
+
+```bash
+dotnet add package Protobuf.Generator   # 源生成器（以 analyzer 自动加载，自动扫描 **/*.proto）
+dotnet add package Protobuf.Core        # 运行时（生成的代码依赖它，必需）
+# 按需引入：
+dotnet add package Protobuf.Json        # JSON 序列化
+dotnet add package Protobuf.Reflection  # AOT 友好的反射 API
+```
+
+安装后**无需任何额外配置**——把 `.proto` 放进项目，`dotnet build` 即自动生成代码。
+
+> 包源：NuGet.org 公开、无需认证；GitHub Packages（`https://nuget.pkg.github.com/<owner>/index.json`）即使是公开包也需要 PAT（`read:packages`）认证。
+
+**方式 B：源码内引用（本仓库内部项目 / 开发调试）** —— 使用下方「2. 配置项目文件」里的 `ProjectReference` 方式。
+
 ### 1. 定义 .proto 文件
 
 ```protobuf
