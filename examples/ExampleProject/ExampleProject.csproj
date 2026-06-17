@@ -24,7 +24,6 @@
     <!-- ========================================== -->
 
     <!-- 启用文件生成模式：生成的代码将写入 obj/GeneratedProtobuf 目录 -->
-    <!-- 暂时禁用以调试 -->
     <ProtobufEnableFileGeneration>true</ProtobufEnableFileGeneration>
   </PropertyGroup>
 
@@ -40,6 +39,14 @@
     <ProjectReference Include="..\..\src\Protobuf.Generator\Protobuf.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
+
+    <!-- 引用 MSBuild 任务程序集（文件生成模式必需）。
+         仅用于确保构建顺序——在 ExampleProject 评估前先构建出 Tasks 程序集，
+         使 UsingTask 能注册 GenerateProtobufCode 任务。
+         ReferenceOutputAssembly=false 避免将其作为编译期引用（任务由 UsingTask 单独加载）。 -->
+    <ProjectReference Include="..\..\src\Protobuf.Generator.Tasks\Protobuf.Generator.Tasks.csproj"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all" />
 
     <!-- 可选：引用 JSON 支持 -->
     <!--
