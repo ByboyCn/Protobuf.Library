@@ -18,6 +18,11 @@
 
     <!-- 是否启用文件生成模式（默认为 false，使用 Source Generator） -->
     <ProtobufEnableFileGeneration Condition="'$(ProtobufEnableFileGeneration)' == ''">false</ProtobufEnableFileGeneration>
+
+    <!-- 是否启用代码生成（默认为 true）。
+         当某个项目需要保留手写的消息类、避免与生成的同名类冲突时，
+         在该项目中设置 <ProtobufEnableCodeGeneration>false</ProtobufEnableCodeGeneration>。 -->
+    <ProtobufEnableCodeGeneration Condition="'$(ProtobufEnableCodeGeneration)' == ''">true</ProtobufEnableCodeGeneration>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,13 +30,13 @@
   </ItemGroup>
 
   <!-- 默认的 Proto 文件包含模式 -->
-  <ItemGroup Condition="'@(ProtoFile)' == ''">
+  <ItemGroup Condition="'$(ProtobufEnableCodeGeneration)' == 'true' AND '@(ProtoFile)' == ''">
     <!-- 如果没有显式配置，包含所有 .proto 文件 -->
     <AdditionalFiles Include="**\*.proto" />
   </ItemGroup>
 
   <!-- 如果用户显式配置了 ProtoFile 项，转换为 AdditionalFiles -->
-  <ItemGroup Condition="'@(ProtoFile)' != ''">
+  <ItemGroup Condition="'$(ProtobufEnableCodeGeneration)' == 'true' AND '@(ProtoFile)' != ''">
     <AdditionalFiles Include="@(ProtoFile)" />
   </ItemGroup>
 
