@@ -143,10 +143,12 @@ jobs:
         # 只发布核心库包，跳过示例项目
         for package in ./artifacts/*.nupkg; do
           if [[ $package != *.symbols.nupkg ]]; then
-            # 检查是否是示例项目（更精确的匹配）
             package_name=$(basename "$package")
-            if [[ "$package_name" =~ ^Examples\. ]]; then
-              echo "⏭️  Skipping example package: $package_name"
+            # 采用白名单：只发布以 "Protobuf." 开头的核心库包。
+            # 之前的 ^Examples\. 只能匹配 Examples，漏掉了 ExampleProject，
+            # 导致 ExampleProject.nupkg 被推送到 NuGet.org 触发 403。
+            if [[ ! "$package_name" =~ ^Protobuf\. ]]; then
+              echo "⏭️  Skipping non-core package: $package_name"
               continue
             fi
             # 发布核心库包
