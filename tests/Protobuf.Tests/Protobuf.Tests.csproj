@@ -31,9 +31,9 @@
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- 暂时禁用代码生成器，避免与手写类冲突 -->
-    <!-- <AdditionalFiles Include="*.proto" /> -->
-  </ItemGroup>
+  <PropertyGroup>
+    <!-- 该测试项目保留手写的 SimpleMessage 类，禁用代码生成以避免与生成的同名类冲突 -->
+    <ProtobufEnableCodeGeneration>false</ProtobufEnableCodeGeneration>
+  </PropertyGroup>
 
 </Project>

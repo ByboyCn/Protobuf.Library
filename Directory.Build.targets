@@ -9,15 +9,22 @@
   <Import Project="$(MSBuildThisFileDirectory)build\Protobuf.Generator.targets" Condition="Exists('$(MSBuildThisFileDirectory)build\Protobuf.Generator.targets')" />
 
   <!-- 查找 MSBuild 任务程序集 -->
+  <!-- 注意：
+       1) 路径必须使用正斜杠（/）。反斜杠在 Linux/macOS 上不是分隔符，会导致加载失败。
+       2) TFM 必须与 Protobuf.Generator.Tasks.csproj 的 TargetFramework 一致。
+       3) 这里不能依赖 Exists()：UsingTask 在项目“评估”阶段注册，而被引用的 Tasks
+          程序集此时往往尚未构建（它在 CoreCompile 前才由 ProjectReference 触发构建）。
+          UsingTask 会延迟到任务被真正调用时才加载程序集，因此这里按“约定路径”赋值，
+          真正的存在性检查放到 ProtobufDisplayTasksInfo 目标里。 -->
   <PropertyGroup>
-    <!-- 尝试多个可能的路径 -->
-    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == '' AND Exists('$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Debug\net8.0\Protobuf.Generator.Tasks.dll')">$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Debug\net8.0\Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
-    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == '' AND Exists('$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Release\net8.0\Protobuf.Generator.Tasks.dll')">$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Release\net8.0\Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
-    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == '' AND Exists('$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\$(Configuration)\net8.0\Protobuf.Generator.Tasks.dll')">$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\$(Configuration)\net8.0\Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
+    <_ProtobufTasksTfm Condition="'$(_ProtobufTasksTfm)' == ''">netstandard2.1</_ProtobufTasksTfm>
+    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == ''">$(MSBuildThisFileDirectory)src/Protobuf.Generator.Tasks/bin/$(Configuration)/$(_ProtobufTasksTfm)/Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
   </PropertyGroup>
 
-  <!-- 注册 MSBuild 任务（必须在 Project 级别，不能在 Target 内） -->
-  <UsingTask TaskName="Protobuf.Generator.Tasks.GenerateProtobufCode" AssemblyFile="$(_ProtobufTasksPath)" Condition="Exists('$(_ProtobufTasksPath)')" />
+  <!-- 注册 MSBuild 任务（必须在 Project 级别，不能在 Target 内）。
+       切勿在此处加 Condition="Exists(...)"——那会在评估阶段（程序集尚未构建时）
+       跳过注册，导致运行时 MSB4036（任务未找到）。 -->
+  <UsingTask TaskName="Protobuf.Generator.Tasks.GenerateProtobufCode" AssemblyFile="$(_ProtobufTasksPath)" Condition="'$(_ProtobufTasksPath)' != ''" />
 
   <!-- 显示任务注册信息 -->
   <Target Name="ProtobufDisplayTasksInfo" BeforeTargets="ProtobufGenerateCodeToFile" Condition="'$(ProtobufEnableFileGeneration)' == 'true'">
