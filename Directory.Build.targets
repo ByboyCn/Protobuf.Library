@@ -5,14 +5,25 @@
     这个文件会自动应用到解决方案中的所有项目
   -->
 
-  <!-- 当项目引用了 Protobuf.Generator 时，自动导入 targets -->
-  <Target Name="ImportProtobufTargets" BeforeTargets="CoreCompile" Condition="'@(ProjectReference->WithMetadataValue('Name', 'Protobuf.Generator')->Count())' > 0">
-    <PropertyGroup>
-      <_ProtobufTargetsPath>$(MSBuildThisFileDirectory)build\Protobuf.Generator.targets</_ProtobufTargetsPath>
-    </PropertyGroup>
+  <!-- 直接导入构建目标文件 -->
+  <Import Project="$(MSBuildThisFileDirectory)build\Protobuf.Generator.targets" Condition="Exists('$(MSBuildThisFileDirectory)build\Protobuf.Generator.targets')" />
 
-    <!-- 导入 targets 文件（如果存在） -->
-    <Import Project="$(_ProtobufTargetsPath)" Condition="Exists('$(_ProtobufTargetsPath)')" />
+  <!-- 查找 MSBuild 任务程序集 -->
+  <PropertyGroup>
+    <!-- 尝试多个可能的路径 -->
+    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == '' AND Exists('$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Debug\net8.0\Protobuf.Generator.Tasks.dll')">$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Debug\net8.0\Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
+    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == '' AND Exists('$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Release\net8.0\Protobuf.Generator.Tasks.dll')">$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\Release\net8.0\Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
+    <_ProtobufTasksPath Condition="'$(_ProtobufTasksPath)' == '' AND Exists('$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\$(Configuration)\net8.0\Protobuf.Generator.Tasks.dll')">$(MSBuildThisFileDirectory)src\Protobuf.Generator.Tasks\bin\$(Configuration)\net8.0\Protobuf.Generator.Tasks.dll</_ProtobufTasksPath>
+  </PropertyGroup>
+
+  <!-- 注册 MSBuild 任务（必须在 Project 级别，不能在 Target 内） -->
+  <UsingTask TaskName="Protobuf.Generator.Tasks.GenerateProtobufCode" AssemblyFile="$(_ProtobufTasksPath)" Condition="Exists('$(_ProtobufTasksPath)')" />
+
+  <!-- 显示任务注册信息 -->
+  <Target Name="ProtobufDisplayTasksInfo" BeforeTargets="ProtobufGenerateCodeToFile" Condition="'$(ProtobufEnableFileGeneration)' == 'true'">
+    <!-- 如果找不到任务程序集，显示警告 -->
+    <Warning Text="Protobuf.Generator.Tasks.dll not found. File generation mode will not work." Condition="!Exists('$(_ProtobufTasksPath)')" />
+    <Message Text="Found Protobuf.Generator.Tasks.dll at: $(_ProtobufTasksPath)" Importance="normal" Condition="Exists('$(_ProtobufTasksPath)')" />
   </Target>
 
 </Project>

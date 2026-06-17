@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- 统一的版本号管理 -->
     <!-- 所有项目都会使用这个版本号 -->
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
 
     <!-- 可以通过环境变量覆盖 -->
     <!-- <Version>$(PACKAGE_VERSION)</Version> -->

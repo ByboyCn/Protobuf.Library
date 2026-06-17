@@ -1,0 +1,4 @@
+version: 1.0
+repo_dir: repos
+commit_when_archive: false
+repositories: []

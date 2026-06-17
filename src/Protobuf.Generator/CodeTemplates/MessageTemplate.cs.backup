@@ -49,11 +49,6 @@ internal sealed class MessageTemplate : TemplateBase
         // 生成属性（带 get; set;）
         GeneratePropertiesWithSetter();
 
-        GenerateHasMethods();
-        GenerateSetters();
-        GenerateClearMethods();
-        GenerateOneOfCode();
-
         // 生成构造函数
         GenerateConstructors();
 
@@ -111,12 +106,12 @@ internal sealed class MessageTemplate : TemplateBase
             {
                 var keyType = GetMapKeyType(field);
                 var valueType = GetMapValueType(field);
-                AddLine($"private Dictionary<{keyType}, {valueType}> _{GetFieldName(field)} = new();");
+                AddLine($"private readonly Dictionary<{keyType}, {valueType}> _{GetFieldName(field)} = new();");
             }
             else if (field.Label == FieldLabel.Repeated)
             {
                 var elementType = GetElementType(field);
-                AddLine($"private List<{elementType}> _{GetFieldName(field)} = new();");
+                AddLine($"private readonly List<{elementType}> _{GetFieldName(field)} = new();");
             }
             else
             {
@@ -231,10 +226,10 @@ internal sealed class MessageTemplate : TemplateBase
         AddLine();
 
         // Parser 从字节数组
-        AddLine($"public static {_message.Name} FromByteArray(byte[] data)");
+        AddLine("public static {_message.Name} FromByteArray(byte[] data)");
         AddLineNoIndent("{");
         Indent();
-        AddLine($"var message = new {_message.Name}();");
+        AddLine("var message = new {_message.Name}();");
         AddLine("var input = new Protobuf.Core.CodedInputStream(new System.IO.MemoryStream(data));");
         AddLine("message.MergeFrom(input);");
         AddLine("return message;");
@@ -266,8 +261,8 @@ internal sealed class MessageTemplate : TemplateBase
             }
             else if (field.IsOneOf)
             {
-                var oneOfName = GetOneOfName(field);
-                AddLine($"public bool Has{ToPascalCase(field.Name)} => _{ToCamelCase(oneOfName)}Case == {oneOfName}Case.{ToPascalCase(field.Name)};");
+                // oneof 字段的 has 方法在 oneof 部分生成
+                continue;
             }
             else
             {

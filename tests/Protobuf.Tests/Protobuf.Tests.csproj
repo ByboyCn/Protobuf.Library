@@ -25,14 +25,15 @@
     <ProjectReference Include="..\..\src\Protobuf.Core\Protobuf.Core.csproj" />
     <ProjectReference Include="..\..\src\Protobuf.Parser\Protobuf.Parser.csproj" />
     <ProjectReference Include="..\..\src\Protobuf.Json\Protobuf.Json.csproj" />
+    <ProjectReference Include="..\..\src\Protobuf.Reflection\Protobuf.Reflection.csproj" />
     <ProjectReference Include="..\..\src\Protobuf.Generator\Protobuf.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- 使用新的 ProtoFile 配置方式 -->
-    <ProtoFile Include="*.proto" />
+    <!-- 暂时禁用代码生成器，避免与手写类冲突 -->
+    <!-- <AdditionalFiles Include="*.proto" /> -->
   </ItemGroup>
 
 </Project>

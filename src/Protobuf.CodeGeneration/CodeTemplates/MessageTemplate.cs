@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Protobuf.Core;
 using Protobuf.Parser;
 
-namespace Protobuf.Generator.CodeTemplates;
+namespace Protobuf.CodeGeneration.CodeTemplates;
 
 /// <summary>
 /// Message 代码生成模板
