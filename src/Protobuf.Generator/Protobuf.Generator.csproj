@@ -34,9 +34,11 @@
     <None Include="$(OutputPath)Protobuf.Core.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Core.pdb')" />
     <None Include="$(OutputPath)Protobuf.Core.xml" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Core.xml')" />
     <!-- 生成器自身的程序集（最关键！没有它，源生成器根本不会被加载）。
-         IncludeBuildOutput=false 会把主输出排除出 lib/，因此必须显式打包进 analyzers/dotnet/cs。 -->
-    <None Include="$(OutputPath)Protobuf.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="$(OutputPath)Protobuf.Generator.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(OutputPath)Protobuf.Generator.pdb')" />
+         IncludeBuildOutput=false 会把主输出排除出 lib/，因此必须显式打包进 analyzers/dotnet/cs。
+         注意：不能用 CopyToOutputDirectory——它是本项目自身的输出，在 CoreCompile 产出之前
+         被 Copy 目标引用会导致 MSB3030（CI 干净构建必现）。打包只需 Pack=true。 -->
+    <None Include="$(OutputPath)Protobuf.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)Protobuf.Generator.pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" Condition="Exists('$(OutputPath)Protobuf.Generator.pdb')" />
   </ItemGroup>
 
   <PropertyGroup>
