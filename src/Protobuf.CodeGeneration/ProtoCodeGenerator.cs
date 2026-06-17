@@ -320,6 +320,8 @@ public sealed class ProtoCodeGenerator : IProtoCodeGenerator
         codeBuilder.AppendLine();
         codeBuilder.AppendLine("#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member");
         codeBuilder.AppendLine();
+        codeBuilder.AppendLine("using System.Collections.Generic;");
+        codeBuilder.AppendLine();
 
         // 确定命名空间
         var namespaceName = protoFile.Package;

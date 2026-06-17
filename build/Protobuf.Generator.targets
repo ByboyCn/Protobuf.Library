@@ -20,6 +20,10 @@
     <ProtobufEnableFileGeneration Condition="'$(ProtobufEnableFileGeneration)' == ''">false</ProtobufEnableFileGeneration>
   </PropertyGroup>
 
+  <ItemGroup>
+    <CompilerVisibleProperty Include="ProtobufEnableFileGeneration" />
+  </ItemGroup>
+
   <!-- 默认的 Proto 文件包含模式 -->
   <ItemGroup Condition="'@(ProtoFile)' == ''">
     <!-- 如果没有显式配置，包含所有 .proto 文件 -->

@@ -49,6 +49,11 @@ internal sealed class MessageTemplate : TemplateBase
         // 生成属性（带 get; set;）
         GeneratePropertiesWithSetter();
 
+        GenerateHasMethods();
+        GenerateSetters();
+        GenerateClearMethods();
+        GenerateOneOfCode();
+
         // 生成构造函数
         GenerateConstructors();
 
@@ -106,12 +111,12 @@ internal sealed class MessageTemplate : TemplateBase
             {
                 var keyType = GetMapKeyType(field);
                 var valueType = GetMapValueType(field);
-                AddLine($"private readonly Dictionary<{keyType}, {valueType}> _{GetFieldName(field)} = new();");
+                AddLine($"private Dictionary<{keyType}, {valueType}> _{GetFieldName(field)} = new();");
             }
             else if (field.Label == FieldLabel.Repeated)
             {
                 var elementType = GetElementType(field);
-                AddLine($"private readonly List<{elementType}> _{GetFieldName(field)} = new();");
+                AddLine($"private List<{elementType}> _{GetFieldName(field)} = new();");
             }
             else
             {
@@ -261,8 +266,8 @@ internal sealed class MessageTemplate : TemplateBase
             }
             else if (field.IsOneOf)
             {
-                // oneof 字段的 has 方法在 oneof 部分生成
-                continue;
+                var oneOfName = GetOneOfName(field);
+                AddLine($"public bool Has{ToPascalCase(field.Name)} => _{ToCamelCase(oneOfName)}Case == {oneOfName}Case.{ToPascalCase(field.Name)};");
             }
             else
             {
